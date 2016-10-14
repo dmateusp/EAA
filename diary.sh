@@ -7,6 +7,7 @@ if [ -d "$HOME/logs" -a -w "$HOME/logs" ]; then
 else
   echo "Directory $HOME/logs was not there, so directory was created"
   mkdir "$HOME/logs"
-  $line > $HOME/logs/diary_$nowDate.txt
 fi
-
+echo $nowDate >> $HOME/logs/diary.txt
+echo $line >> $HOME/logs/diary.txt
+echo >> $HOME/logs/diary.txt
