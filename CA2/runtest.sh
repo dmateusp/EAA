@@ -1,17 +1,16 @@
 #!/bin/bash
-# Runs with 1, 2, 3,.. to 50 concurrent users
-mpstat 3 50 | awk '
-BEGIN {
-        print "C0\tN\tidle"
-        count=1
+# Runs with 1, 2, 3,.. to 50 (2 when testing) concurrent users
+echo "C0 N idle"
+for i in {1..10}
+    do
+    # loadtest runs during 5 seconds
+    timeout 5s ./loadtest $i &
+    # after 4 seconds printing a report on CPU usage
+    sleep 2
+    mpstat | awk -v N="$i" -v C0="$(cat synthetic.dat | wc -l)" '{
+    if($12!="%idle" && $1!="Average:" && $2=="all")
+      {
+         print C0, N, $12
       }
-{
- if($12!="%idle" && $1!="Average:" && $2=="all")
-     {
-       print $2, count++, $12
-     }
-}' & for i in {1..50}
-       do
-         # loadtest runs during 3 seconds
-         timeout 3s ./loadtest $i 
-       done
+    }'
+done
